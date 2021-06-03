@@ -2,23 +2,27 @@ const express = require('express');
 const mongoose = require('mongoose')
 const exprsBars = require('express-handlebars');
 const path = require('path');
+const userRoutes = require('./routes/user.router')
 
 const PORT = process.env.PORT || 3000
 
 const app = express();
 
+const hbs = exprsBars.create({
+    defaultLayout: false,
+    extname: 'hbs'
+})
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static(path.join(__dirname, 'views')))
 
-express.static(path.join(__dirname, 'views'));
-
-app.engine('.hbs', exprsBars({
-    defaultLayout: false,
-    extname: '.hbs'
-}))
+app.engine('hbs', hbs.engine);
 
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
+
+app.use(userRoutes);
 
 async function start() {
     try {
